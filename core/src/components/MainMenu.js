@@ -32,6 +32,26 @@ import OC from '../OC'
  * If the screen is bigger, the main menu is not a toggle any more.
  */
 export const setUp = () => {
+
+	Object.assign(OC, {
+		setNavigationCounter(id, counter) {
+			if (counter === 0) {
+				document.getElementById('appmenu').querySelector('[data-id="' + id + '"] svg').classList.remove('has-unread')
+				document.getElementById('apps').querySelector('[data-id="' + id + '"] svg').classList.remove('has-unread')
+				document.getElementById('appmenu').querySelector('[data-id="' + id + '"] svg').getElementsByTagName('image')[0].style.mask = ''
+				document.getElementById('apps').querySelector('[data-id="' + id + '"] svg').getElementsByTagName('image')[0].style.mask = ''
+
+			} else {
+				document.getElementById('appmenu').querySelector('[data-id="' + id + '"] svg').classList.add('has-unread')
+				document.getElementById('apps').querySelector('[data-id="' + id + '"] svg').classList.add('has-unread')
+				document.getElementById('appmenu').querySelector('[data-id="' + id + '"] svg').getElementsByTagName('image')[0].style.mask = 'url(#hole)'
+				document.getElementById('apps').querySelector('[data-id="' + id + '"] svg').getElementsByTagName('image')[0].style.mask = 'url(#hole)'
+
+			}
+			document.getElementById('appmenu').querySelector('[data-id="' + id + '"] .unread-counter').textContent = counter
+			document.getElementById('apps').querySelector('[data-id="' + id + '"] .unread-counter').textContent = counter
+		},
+	})
 	// init the more-apps menu
 	OC.registerMenu($('#more-apps > a'), $('#navigation'))
 
