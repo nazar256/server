@@ -78,6 +78,8 @@
 import { encodePath } from '@nextcloud/paths'
 import $ from 'jquery'
 import axios from '@nextcloud/axios'
+import moment from '@nextcloud/moment'
+
 import AppSidebar from '@nextcloud/vue/dist/Components/AppSidebar'
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import EmptyContent from '@nextcloud/vue/dist/Components/EmptyContent'
@@ -170,6 +172,14 @@ export default {
 		},
 
 		/**
+		 * File last modified full string
+		 * @returns {string}
+		 */
+		fullTime() {
+			return moment(this.fileInfo.mtime).format('LLL')
+		},
+
+		/**
 		 * File size formatted string
 		 * @returns {string}
 		 */
@@ -202,6 +212,7 @@ export default {
 					loading: this.loading,
 					starred: this.fileInfo.isFavourited,
 					subtitle: this.subtitle,
+					subtitleTooltip: this.fullTime,
 					title: this.fileInfo.name,
 				}
 			} else if (this.error) {
