@@ -89,7 +89,12 @@ class Local extends \OC\Files\Storage\Common {
 	public function mkdir($path) {
 		$sourcePath = $this->getSourcePath($path);
 		$oldMask = umask(022);
+		\OC::$server->getLogger()->warning("old umask: " . $oldMask);
 		$result = @mkdir($sourcePath, 0777, true);
+		\OC::$server->getLogger()->warning("permissions after mkdir: " . decoct(stat($sourcePath)['mode']));
+		@chmod($sourcePath, 0777);
+		clearstatcache(true, $sourcePath);
+		\OC::$server->getLogger()->warning("permissions after chmod: " . decoct(stat($sourcePath)['mode']));
 		umask($oldMask);
 		return $result;
 	}
