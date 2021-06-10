@@ -48,6 +48,8 @@ use OCP\IUser;
 use OCP\IUserManager;
 use OCP\L10N\IFactory;
 use OCP\Settings\ISettings;
+use OCP\Accounts\IAccountProperty;
+use OCP\AppFramework\Services\IInitialState;
 
 class PersonalInfo implements ISettings {
 
@@ -65,6 +67,8 @@ class PersonalInfo implements ISettings {
 	private $l10nFactory;
 	/** @var IL10N */
 	private $l;
+	/** @var IInitialState */
+	private $initialStateService;
 
 	public function __construct(
 		IConfig $config,
@@ -73,7 +77,8 @@ class PersonalInfo implements ISettings {
 		IAccountManager $accountManager,
 		IAppManager $appManager,
 		IFactory $l10nFactory,
-		IL10N $l
+		IL10N $l,
+		IInitialState $initialStateService
 	) {
 		$this->config = $config;
 		$this->userManager = $userManager;
@@ -82,6 +87,7 @@ class PersonalInfo implements ISettings {
 		$this->appManager = $appManager;
 		$this->l10nFactory = $l10nFactory;
 		$this->l = $l;
+		$this->initialStateService = $initialStateService;
 	}
 
 	public function getForm(): TemplateResponse {
@@ -138,6 +144,35 @@ class PersonalInfo implements ISettings {
 			'groups' => $this->getGroups($user),
 		] + $messageParameters + $languageParameters + $localeParameters;
 
+		$primaryEmail = [
+			'value' => $account->getProperty(IAccountManager::PROPERTY_EMAIL)->getValue(),
+			'scope' => $account->getProperty(IAccountManager::PROPERTY_EMAIL)->getScope(),
+			'verified' => $account->getProperty(IAccountManager::PROPERTY_EMAIL)->getVerified(),
+			'message' => $messageParameters[IAccountManager::PROPERTY_EMAIL . 'Message'],
+		];
+
+		$additionalEmails = array_map(
+			function(IAccountProperty $property) {
+				return [
+					'value' => $property->getValue(),
+					'scope' => $property->getScope(),
+					'verified' => $property->getVerified(),
+				];
+			},
+			$account->getPropertyCollection(IAccountManager::COLLECTION_EMAIL)->getProperties()
+		);
+
+		$emails = [
+			'primaryEmail' => $primaryEmail,
+			'additionalEmails' => $additionalEmails,
+		];
+
+		$accountParameters = [
+			'displayNameChangeSupported' => $user->canChangeDisplayName(),
+		];
+
+		$this->initialStateService->provideInitialState('emails', $emails);
+		$this->initialStateService->provideInitialState('accountParameters', $accountParameters);
 
 		return new TemplateResponse('settings', 'settings/personal/personal.info', $parameters, '');
 	}

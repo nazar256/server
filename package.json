@@ -123,6 +123,7 @@
     "sass-loader": "^10.1.1",
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
+    "vue-fragment": "^1.5.2",
     "vue-jest": "^4.0.1",
     "vue-loader": "^15.9.7",
     "vue-template-compiler": "^2.6.12",

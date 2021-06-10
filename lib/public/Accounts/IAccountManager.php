@@ -98,6 +98,10 @@ interface IAccountManager {
 
 	public const COLLECTION_EMAIL = 'additional_mail';
 
+	public const COLLECTION_PROPERTIES = [
+		self::COLLECTION_EMAIL,
+	];
+
 	public const NOT_VERIFIED = '0';
 	public const VERIFICATION_IN_PROGRESS = '1';
 	public const VERIFIED = '2';

@@ -405,6 +405,12 @@ class AccountManager implements IAccountManager {
 			}
 		}
 
+		foreach ($this::COLLECTION_PROPERTIES as $property) {
+			if (!isset($userData[$property])) {
+				$userData[$property] = new AccountPropertyCollection($property);
+			}
+		}
+
 		return $userData;
 	}
 
@@ -566,6 +572,11 @@ class AccountManager implements IAccountManager {
 					'scope' => self::SCOPE_FEDERATED,
 					'verified' => self::NOT_VERIFIED,
 				],
+			self::COLLECTION_EMAIL =>
+				[
+					// TODO implement the correct way
+					'properties' => [],
+				],
 			self::PROPERTY_AVATAR =>
 				[
 					'scope' => self::SCOPE_FEDERATED
@@ -588,7 +599,11 @@ class AccountManager implements IAccountManager {
 	private function parseAccountData(IUser $user, $data): Account {
 		$account = new Account($user);
 		foreach ($data as $property => $accountData) {
-			$account->setProperty($property, $accountData['value'] ?? '', $accountData['scope'] ?? self::SCOPE_LOCAL, $accountData['verified'] ?? self::NOT_VERIFIED);
+			if (!$this->isCollection($property)) {
+				$account->setProperty($property, $accountData['value'] ?? '', $accountData['scope'] ?? self::SCOPE_LOCAL, $accountData['verified'] ?? self::NOT_VERIFIED);
+			} else {
+				$account->setPropertyCollection(new AccountPropertyCollection($property));
+			}
 		}
 		return $account;
 	}
@@ -600,7 +615,7 @@ class AccountManager implements IAccountManager {
 	public function updateAccount(IAccount $account): void {
 		$data = [];
 
-		foreach ($account->getProperties() as $property) {
+		foreach ($account->getAllProperties() as $property) {
 			$data[$property->getName()] = [
 				'value' => $property->getValue(),
 				'scope' => $property->getScope(),

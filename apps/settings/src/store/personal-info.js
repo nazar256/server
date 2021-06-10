@@ -1,11 +1,7 @@
-<?php
-
-declare(strict_types=1);
-
 /**
- * @copyright Copyright (c) 2021 Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @copyright 2021 Christopher Ng <chrng8@gmail.com>
  *
- * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @author Christopher Ng <chrng8@gmail.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -20,19 +16,34 @@ declare(strict_types=1);
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
-namespace OC\Accounts;
+import Vue from 'vue'
+import Vuex from 'vuex'
 
-use OCP\Accounts\IAccountManager;
+Vue.use(Vuex)
 
-trait TAccountsHelper {
-	protected function isCollection(string $propertyName): bool {
-		return in_array($propertyName,
-			IAccountManager::COLLECTION_PROPERTIES,
-			true
-		);
-	}
+const state = {
+	primaryEmail: '',
+	additionalEmails: [],
 }
+
+const mutations = {
+	setPrimaryEmail(state, email) {
+		state.primaryEmail = email
+	},
+	setAdditionalEmails(state, array) {
+		state.additionalEmails = array
+	},
+	addAdditionalEmail(state, item) {
+		state.additionalEmails.push(item)
+	},
+}
+
+export default new Vuex.Store({
+	strict: process.env.NODE_ENV !== 'production',
+	state,
+	mutations,
+})
