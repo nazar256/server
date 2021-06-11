@@ -22,17 +22,17 @@
 <template>
 	<div>
 		<input v-for="(email, index) in additionalEmails"
+			:id="`additionalEmail-${index}`"
+			:key="index"
 			type="email"
 			name="additionalEmail[]"
-			:id="`additionalEmail-${index}`"
 			:value="email.value"
-			@input="e => updateAdditionalEmailsState(e, index)"
-			@keyup.enter.stop.prevent="updateAdditionalEmails"
 			:placeholder="t('settings', `Additional email address ${index + 1}`)"
-			:key="index"
 			autocomplete="on"
 			autocapitalize="none"
-			autocorrect="off" />
+			autocorrect="off"
+			@input="e => updateAdditionalEmailsState(e, index)"
+			@keyup.enter.stop.prevent="updateAdditionalEmails">
 	</div>
 </template>
 

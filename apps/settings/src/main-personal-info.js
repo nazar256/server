@@ -21,14 +21,13 @@
  */
 
 import Vue from 'vue'
-import { loadState } from '@nextcloud/initial-state'
 // eslint-disable-next-line node/no-unpublished-import
 import { Plugin as FragmentPlugin } from 'vue-fragment'
 
 import logger from './logger'
 
 import EmailSection from './components/PersonalInfo/EmailSection/EmailSection'
-import store from './store/personal-info'
+// import store from './store/personal-info'
 
 // eslint-disable-next-line camelcase
 __webpack_nonce__ = btoa(OC.requestToken)
@@ -39,10 +38,6 @@ Vue.prototype.logger = logger
 Vue.use(FragmentPlugin)
 
 const View = Vue.extend(EmailSection)
-new View({
-	propsData: {
-		initialEmails: loadState('settings', 'emails'),
-		accountParams: loadState('settings', 'accountParameters'),
-	},
-	store,
-}).$mount('#vue-emailform')
+export default new View({
+	el: '#vue-emailform',
+})

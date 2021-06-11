@@ -27,7 +27,7 @@
 			id="verify-email"
 			:src="verificationIcon"
 			:title="email.message"
-			:data-status="email.verified" />
+			:data-status="email.verified">
 	</div>
 </template>
 

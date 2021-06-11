@@ -20,49 +20,83 @@
   -->
 
 <template>
-	<form id="emailform" class="section">
-		<Heading />
-		<Verify />
-		<PrimaryEmail :displayNameChangeSupported="displayNameChangeSupported" />
-		<AdditionalEmail />
+	<form id="emailform" ref="form" class="section">
+		<Heading :can-edit-emails="isDisplayNameChangeSupported"
+			:is-valid-form="isValidForm"
+			@addAdditionalEmail="onAddAdditionalEmail" />
+
+		<!-- <Verify /> -->
+
+		<template v-if="isDisplayNameChangeSupported">
+			<Email :email.sync="primaryEmail.value"
+				:primary="true"
+				@update:email="updateFormValidity" />
+			<Email v-for="(additionalEmail, index) in additionalEmails"
+				:key="index"
+				:email.sync="additionalEmail.value"
+				:index="index"
+				@update:email="updateFormValidity" />
+		</template>
+
+		<span v-else>
+			{{ primaryEmail.value || t('settings', 'No email address set') }}
+		</span>
 	</form>
 </template>
 
 <script>
 import Heading from './Heading'
 import Verify from './Verify'
-import PrimaryEmail from './PrimaryEmail'
-import AdditionalEmail from './AdditionalEmail'
+import Email from './Email'
+// import AdditionalEmail from './AdditionalEmail'
+import { loadState } from '@nextcloud/initial-state'
+
+const { additionalEmails, primaryEmail } = loadState('settings', 'emails')
+const accountParams = loadState('settings', 'accountParameters')
 
 export default {
 	name: 'EmailSection',
+
 	components: {
 		Heading,
 		Verify,
-		PrimaryEmail,
-		AdditionalEmail,
+		Email,
+		// AdditionalEmail,
 	},
-	props: {
-		initialEmails: {
-			type: Object,
-			required: true,
-		},
-		accountParams: {
-			type: Object,
-			required: true,
-		},
-	},
-	created() {
-		/* eslint-disable */
-		this.$store.commit('setPrimaryEmail', this.initialEmails.primaryEmail)
-		this.$store.commit('setAdditionalEmails', this.initialEmails.additionalEmails)
-		console.log('initial primary email', JSON.stringify(this.$store.state.primaryEmail))
-		console.log('initial additional emails', JSON.stringify(this.$store.state.additionalEmails))
-	},
+
 	data() {
 		return {
-			displayNameChangeSupported: this.accountParams.displayNameChangeSupported,
+			accountParams,
+			additionalEmails,
+			primaryEmail,
+
+			isValidForm: true,
 		}
+	},
+
+	computed: {
+		isDisplayNameChangeSupported() {
+			return this.accountParams.displayNameChangeSupported
+		},
+	},
+
+	mounted() {
+		this.updateFormValidity()
+	},
+
+	methods: {
+		onAddAdditionalEmail() {
+			// If all existing inputs are properly
+			// populated, we allow adding a new one
+			if (this.$refs.form.checkValidity()) {
+				this.additionalEmails.push({ value: '' })
+				this.$nextTick(() => this.updateFormValidity())
+			}
+		},
+
+		updateFormValidity() {
+			this.isValidForm = this.$refs.form.checkValidity()
+		},
 	},
 }
 </script>

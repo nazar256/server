@@ -25,6 +25,12 @@ import { getCurrentUser } from '@nextcloud/auth'
 import { generateOcsUrl } from '@nextcloud/router'
 import confirmPassword from '@nextcloud/password-confirmation'
 
+/**
+ * Save the primary email of the user
+ *
+ * @param {string} email the primary email
+ * @returns {Object}
+ */
 export const setPrimaryEmail = async(email) => {
 	const userId = getCurrentUser().uid
 	// TODO upgrade @nextcloud/router to v2.0 so we can remove the .slice() trailing slash hack
@@ -40,6 +46,12 @@ export const setPrimaryEmail = async(email) => {
 	return res.data
 }
 
+/**
+ * Save the additional emails of the user
+ *
+ * @param {string[]} emails the list of emails
+ * @returns {Object}
+ */
 export const setAdditionalEmails = async(emails) => {
 	const userId = getCurrentUser().uid
 	// TODO upgrade @nextcloud/router to v2.0 so we can remove the .slice() trailing slash hack

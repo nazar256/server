@@ -22,12 +22,14 @@
 <template>
 	<h3>
 		<label for="email">{{ t('settings', 'Email') }}</label>
+
 		<a href="#" class="federation-menu" :aria-label="t('settings', 'Change privacy level of email')">
 			<span class="icon-federation-menu icon-password">
-				<span class="icon-triangle-s"></span>
+				<span class="icon-triangle-s" />
 			</span>
 		</a>
-		<Actions class="actions" :disabled="disableAddAdditionalEmail">
+
+		<Actions v-if="canEditEmails" :disabled="!isValidForm" class="actions">
 			<ActionButton icon="icon-add" @click.stop.prevent="addAdditionalEmail">
 				{{ t('settings', 'Add email address') }}
 			</ActionButton>
@@ -44,22 +46,21 @@ export default {
 		Actions,
 		ActionButton,
 	},
-	computed: {
-		additionalEmails() {
-			return this.$store.state.additionalEmails
+
+	props: {
+		canEditEmails: {
+			type: Boolean,
+			default: true,
 		},
-		disableAddAdditionalEmail() {
-			return !this.additionalEmails.every(({ value }) => value !== '')
+		isValidForm: {
+			type: Boolean,
+			default: true,
 		},
 	},
+
 	methods: {
-		/* eslint-disable */
 		addAdditionalEmail() {
-			if (this.additionalEmails.every(({ value }) => value !== '')) {
-				console.log('before commit', JSON.stringify(this.additionalEmails))
-				this.$store.commit('addAdditionalEmail', { value: '' })
-				console.log('after commit', JSON.stringify(this.additionalEmails))
-			}
+			this.$emit('addAdditionalEmail')
 		},
 	},
 }
